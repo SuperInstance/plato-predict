@@ -175,9 +175,9 @@ pub fn linear_regression_fit(series: &TimeSeries) -> ModelFit {
 
     let mut num = 0.0;
     let mut den = 0.0;
-    for i in 0..xs.len() {
-        let dx = xs[i] - x_mean;
-        num += dx * (series.values[i] - y_mean);
+    for (x, y) in xs.iter().zip(&series.values) {
+        let dx = x - x_mean;
+        num += dx * (y - y_mean);
         den += dx * dx;
     }
 
@@ -209,7 +209,7 @@ pub fn linear_regression_fit(series: &TimeSeries) -> ModelFit {
 
 /// Predict at a given timestamp using a fitted linear model.
 pub fn linear_regression_predict(fit: &ModelFit, at: u64) -> Prediction {
-    let slope = fit.params.get(0).copied().unwrap_or(0.0);
+    let slope = fit.params.first().copied().unwrap_or(0.0);
     let intercept = fit.params.get(1).copied().unwrap_or(0.0);
     let value = slope * at as f64 + intercept;
     Prediction {
